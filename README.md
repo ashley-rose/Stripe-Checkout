@@ -1,1 +1,1 @@
-#Stripe Checkout
+
