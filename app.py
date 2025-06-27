@@ -5,8 +5,6 @@ import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-
-# ✅ Stripe API key from environment variable
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
 # ✅ Send email via Outlook SMTP
@@ -27,20 +25,91 @@ def send_email(to_email):
         smtp.login(from_email, password)
         smtp.sendmail(from_email, to_email, msg.as_string())
 
+# ✅ Styled homepage
 @app.route('/')
 def index():
     return '''
-        <h2>Send a Payment</h2>
-        <form action="/create-checkout-session" method="POST">
-            <label>Amount you want to send ($):</label><br>
-            <input name="amount" type="number" step="0.01" required><br><br>
+    <html>
+    <head>
+        <title>Send a Payment</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                background-color: #f6f9fc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .container {
+                background: white;
+                padding: 40px;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                width: 100%;
+                max-width: 400px;
+                box-sizing: border-box;
+                text-align: center;
+            }
+            h2 {
+                margin-bottom: 20px;
+                color: #32325d;
+            }
+            label {
+                display: block;
+                margin-top: 15px;
+                margin-bottom: 5px;
+                text-align: left;
+                color: #525f7f;
+            }
+            input[type="number"] {
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+                margin-bottom: 10px;
+                border: 1px solid #ccd0d5;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+            .radio {
+                text-align: left;
+                margin-bottom: 20px;
+                color: #525f7f;
+            }
+            button {
+                background-color: #6772e5;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                font-size: 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                width: 100%;
+                margin-top: 10px;
+            }
+            button:hover {
+                background-color: #5469d4;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Secure Payment</h2>
+            <form action="/create-checkout-session" method="POST">
+                <label>Amount you want to send ($):</label>
+                <input name="amount" type="number" step="0.01" required>
 
-            <label>Payment Method:</label><br>
-            <input type="radio" name="method" value="card" checked> Card (Fee Added)<br>
-            <input type="radio" name="method" value="ach"> ACH Bank Transfer (No Fee)<br><br>
+                <div class="radio">
+                    <label><input type="radio" name="method" value="card" checked> Card (Fee Added)</label><br>
+                    <label><input type="radio" name="method" value="ach"> ACH Bank Transfer (No Fee)</label>
+                </div>
 
-            <button type="submit">Pay</button>
-        </form>
+                <button type="submit">Pay Securely</button>
+            </form>
+        </div>
+    </body>
+    </html>
     '''
 
 @app.route('/create-checkout-session', methods=['POST'])
@@ -64,7 +133,7 @@ def create_checkout_session():
 
         session = stripe.checkout.Session.create(
             payment_method_types=payment_methods,
-            customer_email=None,  # Stripe will prompt for email in Checkout
+            customer_email=None,
             line_items=[{
                 'price_data': {
                     'currency': 'usd',
@@ -85,25 +154,50 @@ def create_checkout_session():
     except Exception as e:
         return f"Error: {str(e)}", 500
 
-# ✅ Confirmation Page Route
 @app.route('/success')
 def success():
     return '''
-        <h2>✅ Payment Successful!</h2>
-        <p>Thank you — your payment was received. A confirmation email has been sent to you.</p>
-        <a href="/">Return to home</a>
+    <html><head><title>Payment Successful</title>
+    <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial;
+           background-color: #f6f9fc; display: flex; align-items: center; justify-content: center;
+           height: 100vh; margin: 0; }
+    .container { background: white; padding: 40px; border-radius: 8px;
+                 box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; text-align: center; }
+    h2 { color: #2ecc71; }
+    p { color: #525f7f; }
+    a { display: inline-block; background-color: #6772e5; color: white;
+        padding: 12px 20px; border-radius: 4px; text-decoration: none; }
+    a:hover { background-color: #5469d4; }
+    </style></head>
+    <body><div class="container">
+    <h2>✅ Payment Successful</h2>
+    <p>Thank you — your payment was received. A confirmation email has been sent.</p>
+    <a href="/">Return to Home</a></div></body></html>
     '''
 
-# ✅ Cancel Page Route
 @app.route('/cancel')
 def cancel():
     return '''
-        <h2>❌ Payment Cancelled</h2>
-        <p>No worries — your payment wasn’t completed. You can try again anytime.</p>
-        <a href="/">Return to home</a>
+    <html><head><title>Payment Canceled</title>
+    <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial;
+           background-color: #f6f9fc; display: flex; align-items: center; justify-content: center;
+           height: 100vh; margin: 0; }
+    .container { background: white; padding: 40px; border-radius: 8px;
+                 box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; text-align: center; }
+    h2 { color: #e74c3c; }
+    p { color: #525f7f; }
+    a { display: inline-block; background-color: #6772e5; color: white;
+        padding: 12px 20px; border-radius: 4px; text-decoration: none; }
+    a:hover { background-color: #5469d4; }
+    </style></head>
+    <body><div class="container">
+    <h2>❌ Payment Canceled</h2>
+    <p>No worries — your payment wasn’t completed. You can try again anytime.</p>
+    <a href="/">Return to Home</a></div></body></html>
     '''
 
-# ✅ Webhook listener for Stripe events
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
     payload = request.data
@@ -111,17 +205,13 @@ def stripe_webhook():
     webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET')
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, webhook_secret
-        )
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
     except Exception as e:
         return f"Webhook Error: {str(e)}", 400
 
-    # ✅ Trigger on successful payment
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         customer_email = session.get('customer_email')
-
         if customer_email:
             send_email(customer_email)
 
