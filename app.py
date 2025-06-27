@@ -36,8 +36,8 @@ def index():
             <input name="amount" type="number" step="0.01" required><br><br>
 
             <label>Payment Method:</label><br>
-            <input type="radio" name="method" value="card" checked> Card (fee added)<br>
-            <input type="radio" name="method" value="ach"> ACH Bank Transfer (no fee)<br><br>
+            <input type="radio" name="method" value="card" checked> Card (Fee Added)<br>
+            <input type="radio" name="method" value="ach"> ACH Bank Transfer (No Fee)<br><br>
 
             <button type="submit">Pay</button>
         </form>
@@ -53,12 +53,14 @@ def create_checkout_session():
             fixed_fee = 0.30
             percent_fee = 0.029
             total = (amount + fixed_fee) / (1 - percent_fee)
+            item_name = f'Payment via CARD for ${amount:.2f} + Fee'
+            payment_methods = ['card']
         else:
             total = amount
+            item_name = f'Payment via ACH for ${amount:.2f}'
+            payment_methods = ['us_bank_account']
 
         total_cents = round(total * 100)
-
-        payment_methods = ['card'] if method == 'card' else ['us_bank_account']
 
         session = stripe.checkout.Session.create(
             payment_method_types=payment_methods,
@@ -67,7 +69,7 @@ def create_checkout_session():
                 'price_data': {
                     'currency': 'usd',
                     'product_data': {
-                        'name': f'Payment via {method.upper()} for ${amount:.2f}'
+                        'name': item_name
                     },
                     'unit_amount': total_cents,
                 },
