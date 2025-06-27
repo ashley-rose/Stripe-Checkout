@@ -4,8 +4,7 @@ from flask import Flask, request, redirect
 
 app = Flask(__name__)
 
-# REPLACE THIS with your actual Stripe Secret Key
-stripe.api_key = 'pk_live_51LKOjaBbaYzPvUYj47i7WYsG7aDa7BCydIacwHA4wXyAYV3z8uv0cf8Ucdw90Fh69okbxcX1msg9nBFwG1vZO2qk00GzvUFvZf'
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
 @app.route('/')
 def index():
