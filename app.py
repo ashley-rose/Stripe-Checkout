@@ -52,6 +52,10 @@ def index():
                 box-sizing: border-box;
                 text-align: center;
             }
+            .logo {
+                max-width: 160px;
+                margin-bottom: 20px;
+            }
             h2 {
                 margin-bottom: 20px;
                 color: #32325d;
@@ -95,6 +99,7 @@ def index():
     </head>
     <body>
         <div class="container">
+            <img class="logo" src="/logo.png" alt="Company Logo">
             <h2>Secure Payment</h2>
             <form action="/create-checkout-session" method="POST">
                 <label>Amount you want to send ($):</label>
@@ -111,6 +116,7 @@ def index():
     </body>
     </html>
     '''
+
 
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
