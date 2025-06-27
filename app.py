@@ -77,9 +77,25 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='payment',
-            success_url='https://example.com/success',
-            cancel_url='https://example.com/cancel',
+           success_url='https://stripe-checkout-398f.onrender.com/success',
+           cancel_url='https://stripe-checkout-398f.onrender.com/cancel',
+
         )
+@app.route('/success')
+def success():
+    return '''
+        <h2>✅ Payment Successful!</h2>
+        <p>Thank you — your payment was received. A confirmation email has been sent to you.</p>
+        <a href="/">Return to home</a>
+    '''
+
+@app.route('/cancel')
+def cancel():
+    return '''
+        <h2>❌ Payment Cancelled</h2>
+        <p>No worries — your payment wasn’t completed. You can try again anytime.</p>
+        <a href="/">Return to home</a>
+    '''
 
         return redirect(session.url, code=303)
 
