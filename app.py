@@ -58,10 +58,7 @@ def create_checkout_session():
 
         total_cents = round(total * 100)
 
-        if method == 'card':
-            payment_methods = ['card']
-        else:
-            payment_methods = ['us_bank_account']
+        payment_methods = ['card'] if method == 'card' else ['us_bank_account']
 
         session = stripe.checkout.Session.create(
             payment_method_types=payment_methods,
@@ -77,10 +74,16 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='payment',
-           success_url='https://stripe-checkout-398f.onrender.com/success',
-           cancel_url='https://stripe-checkout-398f.onrender.com/cancel',
-
+            success_url='https://stripe-checkout-398f.onrender.com/success',
+            cancel_url='https://stripe-checkout-398f.onrender.com/cancel',
         )
+
+        return redirect(session.url, code=303)
+
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+
+# ✅ Confirmation Page Route
 @app.route('/success')
 def success():
     return '''
@@ -89,6 +92,7 @@ def success():
         <a href="/">Return to home</a>
     '''
 
+# ✅ Cancel Page Route
 @app.route('/cancel')
 def cancel():
     return '''
@@ -96,11 +100,6 @@ def cancel():
         <p>No worries — your payment wasn’t completed. You can try again anytime.</p>
         <a href="/">Return to home</a>
     '''
-
-        return redirect(session.url, code=303)
-
-    except Exception as e:
-        return f"Error: {str(e)}", 500
 
 # ✅ Webhook listener for Stripe events
 @app.route('/webhook', methods=['POST'])
