@@ -99,7 +99,7 @@ def index():
     </head>
     <body>
         <div class="container">
-            <img class="logo" src="/logo.png" alt="Company Logo">
+            <img class="logo" src="/static/logo.png" alt="Company Logo">
             <h2>Secure Payment</h2>
             <form action="/create-checkout-session" method="POST">
                 <label>Amount you want to send ($):</label>
@@ -116,6 +116,7 @@ def index():
     </body>
     </html>
     '''
+
 
 
 @app.route('/create-checkout-session', methods=['POST'])
