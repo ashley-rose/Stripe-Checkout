@@ -4,7 +4,7 @@ from flask import Flask, request, redirect
 import smtplib
 from email.mime.text import MIMEText
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
 # ✅ Send email via Outlook SMTP
